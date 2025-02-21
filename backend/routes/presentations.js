@@ -14,11 +14,36 @@ router.get('/', (req, res) => {
   res.json(presentations);
 });
 
+router.get('/:id', (req, res) => {
+  const presentation = presentations.find(p => p.id === req.params.id);
+  if (presentation) {
+    res.json(presentation);
+  } else {
+    res.status(404).json({ error: 'Presentation not found' });
+  }
+});
+
 router.post('/', (req, res) => {
-  const { name } = req.body;
-  const newPresentation = { id: Date.now().toString(), name, slides: [] };
+  const { name, language, compilerEnabled } = req.body;
+  const newPresentation = { 
+    id: Date.now().toString(), 
+    name, 
+    language: language || 'javascript',
+    compilerEnabled: compilerEnabled !== false,
+    slides: [] 
+  };
   presentations.push(newPresentation);
   res.status(201).json(newPresentation);
+});
+
+router.put('/:id', (req, res) => {
+  const index = presentations.findIndex(p => p.id === req.params.id);
+  if (index !== -1) {
+    presentations[index] = { ...presentations[index], ...req.body };
+    res.json(presentations[index]);
+  } else {
+    res.status(404).json({ error: 'Presentation not found' });
+  }
 });
 
 router.post('/import', upload.single('file'), async (req, res) => {
@@ -31,6 +56,8 @@ router.post('/import', upload.single('file'), async (req, res) => {
     const newPresentation = {
       id: Date.now().toString(),
       name: path.basename(req.file.originalname, path.extname(req.file.originalname)),
+      language: 'javascript',
+      compilerEnabled: true,
       slides: importedSlides
     };
     presentations.push(newPresentation);
