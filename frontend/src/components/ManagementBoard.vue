@@ -1,129 +1,134 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const route = useRoute();
 const router = useRouter();
-const presentations = ref([]);
-const newPresentationName = ref('');
-const fileInput = ref(null);
 
-onMounted(async () => {
-  await fetchPresentations();
+const props = defineProps(['presentation']);
+const emit = defineEmits(['update:presentation']);
+
+const selectedLanguage = ref(props.presentation.language || 'javascript');
+const compilerEnabled = ref(props.presentation.compilerEnabled !== false);
+
+const languages = [
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+];
+
+watch([selectedLanguage, compilerEnabled], () => {
+  emit('update:presentation', {
+    ...props.presentation,
+    language: selectedLanguage.value,
+    compilerEnabled: compilerEnabled.value,
+  });
 });
 
-async function fetchPresentations() {
-  try {
-    const response = await axios.get('/api/presentations');
-    presentations.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch presentations:', error);
+function addSlide(type) {
+  const newSlide = { type, content: '' };
+  if (type === 'code') {
+    newSlide.language = selectedLanguage.value;
+  } else if (type === 'mcq') {
+    newSlide.question = '';
+    newSlide.options = ['', '', '', ''];
+    newSlide.correctAnswer = 0;
   }
+  emit('update:presentation', {
+    ...props.presentation,
+    slides: [...props.presentation.slides, newSlide],
+  });
 }
 
-async function createPresentation() {
-  if (!newPresentationName.value) return;
-
-  try {
-    const response = await axios.post('/api/presentations', { name: newPresentationName.value });
-    newPresentationName.value = '';
-    await fetchPresentations();
-    router.push(`/${response.data.id}`);
-  } catch (error) {
-    console.error('Failed to create presentation:', error);
-  }
+function deleteSlide(index) {
+  const updatedSlides = [...props.presentation.slides];
+  updatedSlides.splice(index, 1);
+  emit('update:presentation', {
+    ...props.presentation,
+    slides: updatedSlides,
+  });
 }
 
-async function importPresentation(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    const response = await axios.post('/api/presentations/import', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    console.log('Import successful:', response.data);
-    await fetchPresentations();
-  } catch (error) {
-    console.error('Failed to import presentation:', error);
-  }
-}
-
-async function deletePresentation(id) {
-  try {
-    await axios.delete(`/api/presentations/${id}`);
-    await fetchPresentations();
-  } catch (error) {
-    console.error('Failed to delete presentation:', error);
-  }
-}
-
-function openPresentation(id) {
-  router.push(`/${id}`);
+function navigateToSlide(index) {
+  router.push(`/${route.params.id}/${index}`);
 }
 </script>
 
 <template>
-  <div class="management-board">
-    <h2>Presentation Management</h2>
-    
-    <div class="create-presentation">
-      <input v-model="newPresentationName" placeholder="New presentation name" />
-      <button @click="createPresentation">Create Presentation</button>
+  <div class="management-console">
+    <h2>Management Console</h2>
+    <div class="settings">
+      <label>
+        Language:
+        <select v-model="selectedLanguage">
+          <option v-for="lang in languages" :key="lang.value" :value="lang.value">
+            {{ lang.label }}
+          </option>
+        </select>
+      </label>
+      <label>
+        Compiler:
+        <input type="checkbox" v-model="compilerEnabled">
+        {{ compilerEnabled ? 'Enabled' : 'Disabled' }}
+      </label>
     </div>
-    
-    <div class="import-presentation">
-      <input type="file" ref="fileInput" @change="importPresentation" accept=".pptx" />
-      <button @click="() => fileInput.click()">Import Presentation</button>
+    <div class="slide-management">
+      <h3>Slides</h3>
+      <button @click="addSlide('text')">Add Text Slide</button>
+      <button @click="addSlide('code')">Add Code Slide</button>
+      <button @click="addSlide('mcq')">Add MCQ Slide</button>
+      <button @click="addSlide('short-answer')">Add Short Answer Slide</button>
+      <ul class="slide-list">
+        <li v-for="(slide, index) in props.presentation.slides" :key="index">
+          Slide {{ index + 1 }}: {{ slide.type }}
+          <button @click="navigateToSlide(index)">View</button>
+          <button @click="deleteSlide(index)">Delete</button>
+        </li>
+      </ul>
     </div>
-    
-    <ul class="presentation-list">
-      <li v-for="presentation in presentations" :key="presentation.id">
-        {{ presentation.name }}
-        <button @click="openPresentation(presentation.id)">Open</button>
-        <button @click="deletePresentation(presentation.id)">Delete</button>
-      </li>
-    </ul>
   </div>
 </template>
 
 <style scoped>
-.management-board {
-  max-width: 800px;
-  margin: 0 auto;
+.management-console {
+  background-color: #f0f0f0;
   padding: 20px;
-}
-
-.create-presentation, .import-presentation {
+  border-radius: 8px;
   margin-bottom: 20px;
 }
 
-input[type="file"] {
-  display: none;
+.settings {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
-button {
-  margin-left: 10px;
-  padding: 5px 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
+.slide-management {
+  margin-top: 20px;
 }
 
-.presentation-list {
+.slide-list {
   list-style-type: none;
   padding: 0;
 }
 
-.presentation-list li {
+.slide-list li {
+  margin-bottom: 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+  gap: 10px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 </style>
