@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import * as monaco from 'monaco-editor';
 import axios from 'axios';
 
-const props = defineProps(['language', 'code', 'compilerEnabled']);
+const props = defineProps(['language', 'code', 'compilerEnabled', 'isPresenter']);
 const editorRef = ref(null);
 const output = ref('');
 let editor;
@@ -13,17 +13,26 @@ onMounted(() => {
     value: props.code,
     language: props.language,
     theme: 'vs-dark',
-    automaticLayout: true
+    automaticLayout: true,
+    readOnly: !props.isPresenter
   });
 
   editor.onDidChangeModelContent(() => {
-    // Handle code changes
+    if (props.isPresenter) {
+      // Emit changes to other participants
+    }
   });
 });
 
 watch(() => props.language, (newLanguage) => {
   if (editor) {
     monaco.editor.setModelLanguage(editor.getModel(), newLanguage);
+  }
+});
+
+watch(() => props.isPresenter, (newIsPresenter) => {
+  if (editor) {
+    editor.updateOptions({ readOnly: !newIsPresenter });
   }
 });
 
@@ -53,8 +62,8 @@ function formatCode() {
   <div class="code-editor">
     <div ref="editorRef" style="height: 300px;"></div>
     <div class="actions">
-      <button @click="compileCode" :disabled="!compilerEnabled">Compile & Run</button>
-      <button @click="formatCode">Format Code</button>
+      <button @click="compileCode" :disabled="!compilerEnabled || !isPresenter">Compile & Run</button>
+      <button @click="formatCode" :disabled="!isPresenter">Format Code</button>
     </div>
     <div class="output">
       <h3>Output:</h3>
