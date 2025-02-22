@@ -8,7 +8,7 @@ export async function parsePresentation(filePath) {
   if (fileExt === '.pptx') {
     return await parsePowerPoint(filePath);
   } else {
-    throw new Error('Unsupported file format');
+    throw new Error('Unsupported file format. Please upload a .pptx file.');
   }
 }
 
@@ -20,7 +20,7 @@ async function parsePowerPoint(filePath) {
     const worksheet = workbook.Sheets[sheetName];
     const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
 
-    // Simplified parsing logic - you may need to enhance this based on your PowerPoint structure
+    // Ensure the first row is treated as the slide type
     const slideType = jsonData[0][0] || 'text';
     const slideContent = jsonData.slice(1).map(row => row.join(' ')).join('\n');
 

@@ -18,7 +18,7 @@ fi
 
 # Install project dependencies
 echo "Installing project dependencies..."
-npm install
+npm install --legacy-peer-deps
 
 # Install frontend dependencies
 echo "Installing frontend dependencies..."

@@ -34,6 +34,7 @@ async function fetchPresentation() {
     presentation.value = response.data;
   } catch (error) {
     console.error('Error fetching presentation:', error);
+    alert('Failed to load presentation. Please check the code and try again.');
   }
 }
 
@@ -106,50 +107,24 @@ function handleShortAnswerSubmit(answer) {
 </script>
 
 <template>
-  <div class="presentation" v-if="presentation">
-    <h1>{{ presentation.name }} (Code: {{ route.params.code }})</h1>
-    <ManagementConsole 
-      v-if="isPresenter" 
-      :presentation="presentation" 
-      @update:presentation="updatePresentation" 
-    />
-    <div class="slide">
-      <template v-if="presentation.slides[currentSlide].type === 'text'">
-        <p>{{ presentation.slides[currentSlide].content }}</p>
-      </template>
-      <template v-else-if="presentation.slides[currentSlide].type === 'code'">
-        <CodeEditor
-          :language="presentation.slides[currentSlide].language"
-          :code="presentation.slides[currentSlide].content"
-          :compiler-enabled="presentation.compilerEnabled"
-          :is-presenter="isPresenter"
-        />
-      </template>
-      <template v-else-if="presentation.slides[currentSlide].type === 'mcq'">
-        <MCQSlide
-          :question="presentation.slides[currentSlide].question"
-          :options="presentation.slides[currentSlide].options"
-          :is-presenter="isPresenter"
-          @submit="handleMCQSubmit"
-        />
-      </template>
-      <template v-else-if="presentation.slides[currentSlide].type === 'short-answer'">
-        <ShortAnswerSlide
-          :question="presentation.slides[currentSlide].question"
-          :is-presenter="isPresenter"
-          @submit="handleShortAnswerSubmit"
-        />
-      </template>
+  <div class="container mt-5">
+    <h1 class="text-center">Presentation: {{ presentation?.name }}</h1>
+    <div class="slide-container">
+      <component :is="presentation?.slides[currentSlide]?.type === 'code' ? CodeEditor : presentation?.slides[currentSlide]?.type === 'mcq' ? MCQSlide : ShortAnswerSlide"
+                 :slide="presentation?.slides[currentSlide]"
+                 :is-presenter="isPresenter"
+                 @mcq-submit="handleMCQSubmit"
+                 @short-answer-submit="handleShortAnswerSubmit" />
     </div>
-    <div class="controls" v-if="isPresenter">
-      <button @click="prevSlide" :disabled="currentSlide === 0">Previous</button>
-      <button @click="nextSlide" :disabled="currentSlide === presentation.slides.length - 1">Next</button>
+    <div class="controls mt-4">
+      <button @click="prevSlide" :disabled="currentSlide === 0" class="btn btn-secondary">Previous</button>
+      <button @click="nextSlide" :disabled="currentSlide === presentation?.slides.length - 1" class="btn btn-primary">Next</button>
     </div>
-    <div class="participants">
+    <div class="participants mt-4">
       <h3>Participants</h3>
-      <ul>
-        <li v-for="participant in participants" :key="participant.id">
-          {{ participant.username }} {{ participant.isPresenter ? '(Presenter)' : '' }}
+      <ul class="list-group">
+        <li v-for="participant in participants" :key="participant.id" class="list-group-item">
+          {{ participant.username }} <span v-if="participant.isPresenter" class="badge badge-primary">Presenter</span>
         </li>
       </ul>
     </div>
@@ -157,53 +132,17 @@ function handleShortAnswerSubmit(answer) {
 </template>
 
 <style scoped>
-.presentation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.slide {
-  width: 100%;
-  min-height: 300px;
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin-bottom: 20px;
+.slide-container {
+    margin-bottom: 20px; /* Space below the slide container */
 }
 
 .controls {
-  display: flex;
-  justify-content: space-between;
-  width: 200px;
-  margin-bottom: 20px;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+    display: flex;
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 20px; /* Space above controls */
 }
 
 .participants {
-  width: 100%;
-  max-width: 300px;
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-
-.participants ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.participants li {
-  margin-bottom: 5px;
+    margin-top: 30px; /* Space above participants list */
 }
 </style>

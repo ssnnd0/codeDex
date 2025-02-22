@@ -33,6 +33,8 @@ function addSlide(type) {
     newSlide.question = '';
     newSlide.options = ['', '', '', ''];
     newSlide.correctAnswer = 0;
+  } else if (type === 'short-answer') {
+    newSlide.question = '';
   }
   emit('update:presentation', {
     ...props.presentation,

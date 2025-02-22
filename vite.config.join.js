@@ -11,14 +11,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: 'src/main.js', // Ensure this points to your main entry file
+        join: 'src/main.js', // Ensure this points to your main entry file for the join page
       },
     },
   },
-  server: {
-    port: 5731,
-  },
-  preview: {
-    port: 5731,
-  },
-});
+}); 

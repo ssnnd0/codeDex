@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  const presentation = presentations.find(p => p.id === req.params.id);
+  const presentation = presentations.find(p => p.code === req.params.id);
   if (presentation) {
     res.json(presentation);
   } else {
@@ -54,7 +54,7 @@ router.post('/import', upload.single('file'), async (req, res) => {
   try {
     const importedSlides = await parsePresentation(req.file.path);
     const newPresentation = {
-      id: Date.now().toString(),
+      code: Date.now().toString(),
       name: path.basename(req.file.originalname, path.extname(req.file.originalname)),
       language: 'javascript',
       compilerEnabled: true,

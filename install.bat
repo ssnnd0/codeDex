@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 
 REM Install project dependencies
 echo Installing project dependencies...
-call npm install
+call npm install --legacy-peer-deps
 
 REM Install frontend dependencies
 echo Installing frontend dependencies...

@@ -49,7 +49,7 @@ async function compileCode() {
     });
     output.value = response.data.stdout || response.data.stderr || 'Compilation successful';
   } catch (error) {
-    output.value = 'Compilation failed';
+    output.value = 'Compilation failed: ' + (error.response?.data?.error || 'Unknown error');
   }
 }
 

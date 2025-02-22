@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Dashboard from '../components/Dashboard.vue';
-import Presentation from '../components/Presentation.vue';
-import JoinPage from '../components/JoinPage.vue';
+import Dashboard from '@/components/Dashboard.vue';
+import Presentation from '@/components/Presentation.vue';
+import JoinPage from '@/components/JoinPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +17,10 @@ const router = createRouter({
     {
       path: '/join',
       component: JoinPage,
+    },
+    {
+      path: '/dashboard',
+      component: Dashboard,
     },
   ],
 });

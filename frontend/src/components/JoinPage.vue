@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { HeroLoginIcon } from '@heroicons/vue/solid';
 
 const router = useRouter();
 const joinCode = ref('');
@@ -14,46 +15,18 @@ function joinPresentation() {
 </script>
 
 <template>
-  <div class="join-page">
-    <h1>Join CodeSync Presentation</h1>
+  <div class="container mt-5">
+    <h1 class="text-center">Join CodeSync Presentation</h1>
     <div class="join-form">
-      <input v-model="joinCode" placeholder="Enter 6-digit code" maxlength="6" />
-      <input v-model="username" placeholder="Enter your name" />
-      <button @click="joinPresentation">Join Presentation</button>
+      <input v-model="joinCode" placeholder="Enter 6-digit code" maxlength="6" class="form-control mb-2" />
+      <input v-model="username" placeholder="Enter your name" class="form-control mb-2" />
+      <button @click="joinPresentation" class="btn btn-primary">
+        <HeroLoginIcon class="h-5 w-5 inline-block" /> Join Presentation
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.join-page {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}
-
-.join-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-input {
-  padding: 10px;
-  font-size: 16px;
-}
-
-button {
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #45a049;
-}
+/* Add any additional styles here */
 </style>
