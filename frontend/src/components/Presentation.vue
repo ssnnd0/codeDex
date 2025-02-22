@@ -39,7 +39,7 @@ async function fetchPresentation() {
 
 function joinRoom() {
   const roomId = route.params.code;
-  const username = prompt('Enter your name:');
+  const username = route.query.username || prompt('Enter your name:');
   socket.emit('join-room', { roomId, username });
 
   socket.on('room-joined', (data) => {
@@ -50,7 +50,7 @@ function joinRoom() {
   socket.on('slide-changed', (slideIndex) => {
     if (!isPresenter.value) {
       currentSlide.value = slideIndex;
-      router.push(`/presentation/${roomId}/${slideIndex}`);
+      router.push(`/presentation/${roomId}/${slideIndex}?username=${encodeURIComponent(username)}`);
     }
   });
 
@@ -73,7 +73,7 @@ function prevSlide() {
 
 function changeSlide(index) {
   currentSlide.value = index;
-  router.push(`/presentation/${route.params.code}/${index}`);
+  router.push(`/presentation/${route.params.code}/${index}?username=${encodeURIComponent(route.query.username)}`);
   if (isPresenter.value) {
     socket.emit('slide-change', { roomId: route.params.code, slideIndex: index });
   }
