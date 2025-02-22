@@ -38,7 +38,7 @@ You can install CodeSync using one of the following methods:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/codesync.git
+   git clone https://github.com/ssnnd0/codeDex.git
    cd codesync
    ```
 
@@ -51,7 +51,7 @@ You can install CodeSync using one of the following methods:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/codesync.git
+   git clone https://github.com/ssnnd0/codeDex.git
    cd codesync
    ```
 
