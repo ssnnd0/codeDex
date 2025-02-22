@@ -67,6 +67,7 @@ You can install CodeSync using one of the following methods:
    ```
    RAPIDAPI_KEY=your_rapidapi_key_here
    ```
+   Remember to set up your `RAPIDAPI_KEY` environment variable for the code compilation to work. You can get this key by signing up for the Judge0 API on RapidAPI.
 
 ## Running the Application
 
