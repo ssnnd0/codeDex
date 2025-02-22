@@ -68,22 +68,109 @@ You can install CodeSync using one of the following methods:
    RAPIDAPI_KEY=your_rapidapi_key_here
    ```
 
-## Usage
+## Running the Application
 
-1. Start the development server:
+The application consists of three parts that need to be running simultaneously:
+
+1. Backend server:
    ```
+   cd backend
+   npm start
+   ```
+   The backend will run on port 3000.
+
+2. Main application (Management Dashboard):
+   ```
+   cd frontend
    npm run dev
    ```
+   The main application will be available at `http://localhost:5731`
 
-2. Open your browser and navigate to `http://localhost:5173`
+3. Join page:
+   ```
+   cd frontend
+   npm run dev:join
+   ```
+   The join page will be available at `http://localhost:5732/join`
 
-3. Create a new presentation or import an existing PowerPoint file
+## Usage
 
-4. Share the presentation URL with others for real-time collaboration
+### For Presenters
 
-## Contributing
+1. Access the main application at `http://localhost:5731`
+2. Create a new presentation or import an existing PowerPoint file
+3. Share the generated 6-digit code with participants
+4. Use the Management Console to:
+   - Select programming language
+   - Enable/disable compiler
+   - Add different types of slides (text, code, MCQ, short answer)
+   - Navigate through slides
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### For Participants
+
+1. Access the join page at `http://localhost:5732/join`
+2. Enter the 6-digit code provided by the presenter
+3. Enter your name
+4. Participate in the presentation by:
+   - Viewing slides in real-time
+   - Writing and running code (when enabled)
+   - Answering MCQs and short answer questions
+
+## Slide Types
+
+1. **Text Slides**
+   - Basic text content
+   - Supports formatting
+
+2. **Code Slides**
+   - Syntax highlighting
+   - Code compilation (when enabled)
+   - Real-time code editing
+
+3. **Multiple Choice Questions (MCQ)**
+   - Multiple options
+   - Immediate feedback
+   - Results visible to presenter
+
+4. **Short Answer Questions**
+   - Free-form text responses
+   - Submissions collected for presenter review
+
+## Development
+
+### Project Structure
+
+```
+codesync/
+├── backend/
+│   ├── routes/
+│   │   ├── api.js
+│   │   ├── presentations.js
+│   │   └── compile.js
+│   ├── utils/
+│   │   ├── presentationParser.js
+│   │   └── codeGenerator.js
+│   └── server.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Dashboard.vue
+│   │   │   ├── Presentation.vue
+│   │   │   ├── CodeEditor.vue
+│   │   │   ├── MCQSlide.vue
+│   │   │   ├── ShortAnswerSlide.vue
+│   │   │   ├── ManagementConsole.vue
+│   │   │   └── JoinPage.vue
+│   │   ├── router/
+│   │   │   └── index.js
+│   │   ├── App.vue
+│   │   └── main.js
+│   ├── vite.config.js
+│   └── vite.config.join.js
+├── install.sh
+├── install.bat
+└── README.md
+```
 
 ## License
 
