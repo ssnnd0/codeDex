@@ -1,16 +1,5 @@
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import App from './App.vue'
-import Presentation from './components/Presentation.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
 
-const routes = [
-  { path: '/', component: App },
-  { path: '/:roomId', component: Presentation },
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
-
-createApp(App).use(router).mount('#app')
+createApp(App).use(router).mount('#app');
