@@ -30,7 +30,7 @@ watch(() => route.params.slideIndex, (newSlideIndex) => {
 
 async function fetchPresentation() {
   try {
-    const response = await axios.get(`/api/presentations/${route.params.id}`);
+    const response = await axios.get(`/api/presentations/${route.params.code}`);
     presentation.value = response.data;
   } catch (error) {
     console.error('Error fetching presentation:', error);
@@ -38,7 +38,7 @@ async function fetchPresentation() {
 }
 
 function joinRoom() {
-  const roomId = route.params.id;
+  const roomId = route.params.code;
   const username = prompt('Enter your name:');
   socket.emit('join-room', { roomId, username });
 
@@ -73,15 +73,15 @@ function prevSlide() {
 
 function changeSlide(index) {
   currentSlide.value = index;
-  router.push(`/presentation/${route.params.id}/${index}`);
+  router.push(`/presentation/${route.params.code}/${index}`);
   if (isPresenter.value) {
-    socket.emit('slide-change', { roomId: route.params.id, slideIndex: index });
+    socket.emit('slide-change', { roomId: route.params.code, slideIndex: index });
   }
 }
 
 async function updatePresentation(updatedPresentation) {
   try {
-    await axios.put(`/api/presentations/${route.params.id}`, updatedPresentation);
+    await axios.put(`/api/presentations/${route.params.code}`, updatedPresentation);
     presentation.value = updatedPresentation;
   } catch (error) {
     console.error('Error updating presentation:', error);
@@ -90,7 +90,7 @@ async function updatePresentation(updatedPresentation) {
 
 function handleMCQSubmit(selectedOption) {
   socket.emit('mcq-answer', {
-    roomId: route.params.id,
+    roomId: route.params.code,
     slideIndex: currentSlide.value,
     answer: selectedOption
   });
@@ -98,7 +98,7 @@ function handleMCQSubmit(selectedOption) {
 
 function handleShortAnswerSubmit(answer) {
   socket.emit('short-answer', {
-    roomId: route.params.id,
+    roomId: route.params.code,
     slideIndex: currentSlide.value,
     answer
   });
@@ -107,6 +107,7 @@ function handleShortAnswerSubmit(answer) {
 
 <template>
   <div class="presentation" v-if="presentation">
+    <h1>{{ presentation.name }} (Code: {{ route.params.code }})</h1>
     <ManagementConsole 
       v-if="isPresenter" 
       :presentation="presentation" 
