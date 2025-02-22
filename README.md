@@ -176,3 +176,11 @@ codesync/
 ## License
 
 This project is licensed under the MIT License.
+
+
+## Acknowledgments
+
+- Monaco Editor for code editing
+- Socket.IO for real-time communication
+- Judge0 API for code compilation
+- Vue.js team for the framework
